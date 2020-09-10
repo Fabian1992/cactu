@@ -25,79 +25,67 @@
     </div>
     <div class="footer">
         <img id="imagenfooter" src="{{$buzonCarta->respuesta?public_path($buzonCarta->imagen):'' }}">
-            <br>
-                <br>
-                    <br>
-                        <br>
-                            <br>
-                                <br>
-                                    <br>
-                                        <br>
-                                            <br>
-                                                <br>
-                                                    <br>
-                                                        <table align="left" class="egt" style="width: 75%;">
-                                                            <tbody class="esta">
-                                                                <tr>
-                                                                    <th>
-                                                                        Número Niño/a.: {{$buzonCarta->buzon->ninio->numeroChild}}
-                                                                    </th>
-                                                                    <th>
-                                                                        Tipo Carta.: {{$buzonCarta->tipoCarta->nombre}}
-                                                                    </th>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </br>
-                                                </br>
-                                            </br>
-                                        </br>
-                                    </br>
-                                </br>
-                            </br>
-                        </br>
-                    </br>
-                </br>
-            </br>
-        </img>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <table align="left" class="egt" style="width: 75%;">
+            <tbody class="esta">
+                <tr>
+                    <th>
+                        Número Niño/a.: {{$buzonCarta->buzon->ninio->numeroChild}}
+                    </th>
+                    <th>
+                        Tipo Carta.: {{$buzonCarta->tipoCarta->nombre}}
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+            
     </div>
 </div>
 <br>
-    <br>
+<br>
+<br>
+    <div class="contenedor2">
+        <div class="primer">
+            <img id="cabecera" src="{!! public_path('/buzon/img/ccagradecimiento.jpg') !!}" width="30%">
+            </img>
+        </div>
         <br>
-            <div class="contenedor2">
-                <div class="primer">
-                    <img id="cabecera" src="{!! public_path('/buzon/img/ccagradecimiento.jpg') !!}" width="30%">
-                    </img>
-                </div>
-                <br>
-                    <br>
-                        @if($buzonCarta->buzonCartaBoletas)
-        @php($cont=0)
-        @foreach($buzonCarta->buzonCartaBoletas as $boleta)
+        <br>
+        @if($buzonCarta->buzonCartaBoletas)
+            @php($cont=0)
+            @foreach($buzonCarta->buzonCartaBoletas as $boleta)
             @php($cont++)
             @if($cont%2==1)
-                        <table align="left" class="egt" style="width: 50%;">
-                            <tbody class="esta">
-                                <img class="card-img" src="{{ public_path('/storage/boletas/'.$boleta->boleta) }}">
-                                </img>
-                            </tbody>
-                        </table>
-                        @else
-                        <table align="right" class="egt" style="width: 50%;">
-                            <tbody class="esta">
-                                <img class="card-img" src="{{ public_path('/storage/boletas/'.$boleta->boleta) }}">
-                                </img>
-                            </tbody>
-                        </table>
-                        @endif                  
-        @endforeach
-    @endif
-                    </br>
-                </br>
-            </div>
-            <style>
-                p{
+                <table align="left" class="egt" style="width: 50%;">
+                    <tbody class="esta">
+                        <img class="card-img" src="{{ public_path('/storage/boletas/'.$boleta->boleta) }}">
+                        </img>
+                    </tbody>
+                </table>
+                @else
+                <table align="right" class="egt" style="width: 50%;">
+                    <tbody class="esta">
+                        <img class="card-img" src="{{ public_path('/storage/boletas/'.$boleta->boleta) }}">
+                        </img>
+                    </tbody>
+                </table>
+                @endif                  
+            @endforeach
+        @endif
+                
+</div>
+<style>
+    p{
         
         letter-spacing:1px;
         font-family:Verdana, Geneva, sans-serif;
@@ -151,7 +139,4 @@
         line-height: 2em;
         font-size: 25px;
     }
-            </style>
-        </br>
-    </br>
-</br>
+</style>

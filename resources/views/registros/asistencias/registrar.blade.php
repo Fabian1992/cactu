@@ -99,8 +99,12 @@
                   success : function(data) {
                    
                     if(data.success){
-                      notificar('success',data.success);               
+                      notificar('success',data.success); 
+                       cargaListado();             
                                            
+                    }
+                    if(data.info){
+                        notificar('info',data.info);
                     }
                     if(data.default){
                       notificar('info',data.default);
