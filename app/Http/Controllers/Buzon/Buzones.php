@@ -68,42 +68,40 @@ class Buzones extends Controller
         $buzonCarta=BuzonCarta::findOrFail($request->getIp);
         if($request->numero==1){
         
-            $image_64 = $request->foto;
-            if (preg_match('/^data:image\/(\w+);base64,/', $image_64)) {
-                $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
-                $replace = substr($image_64, 0, strpos($image_64, ',')+1);
-                $image = str_replace($replace, '', $image_64);
-                $image = str_replace(' ', '+', $image);
-                $imageName = $buzonCarta->id.'.'.$extension;               
-                Storage::put("public/imagenNinio/".$imageName, base64_decode($image));
-                $url = Storage::url("public/imagenNinio/".$imageName);
-                $buzonCarta->imagen=$url;
-                $buzonCarta->save();
-                $data_res = array('success' =>"Foto registrada exitosamente");
+              if ($request->hasFile('foto')) {
+                if ($request->file('foto')->isValid()) {
+                    $extension = $request->foto->extension();
+                   $imageName = $buzonCarta->id.'.'.$extension;  
+                    $path = Storage::putFileAs(
+                        'public/imagenNinio',$request->file('foto'),$buzonCarta->id.'.'.$extension
+                    );
+                    $url = Storage::url("public/imagenNinio/".$imageName);
+                      $buzonCarta->imagen=$url;
+                     $buzonCarta->save();
+                    $data_res = array('success' =>"Foto registrada exitosamente");
+                }                  
             }else{
                 $data_res = array('error' =>'No se puede registrar la imágen');
-
-            }       
+            }              
         
             return response()->json($data_res);
         }else{
             
-            $image_64 = $request->foto;
-            if (preg_match('/^data:image\/(\w+);base64,/', $image_64)) {
-                $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
-                $replace = substr($image_64, 0, strpos($image_64, ',')+1);
-                $image = str_replace($replace, '', $image_64);
-                $image = str_replace(' ', '+', $image);
-                $imageName = $buzonCarta->id.'2'.'.'.$extension;               
-                Storage::put("public/imagenNinio/".$imageName, base64_decode($image));
-                $url = Storage::url("public/imagenNinio/".$imageName);
-                $buzonCarta->imagen2=$url;
-                $buzonCarta->save();
-                $data_res = array('success' =>'Foto Ingresada exitosamente');
+            if ($request->hasFile('foto')) {
+                if ($request->file('foto')->isValid()) {
+                    $extension = $request->foto->extension();
+                   $imageName =$buzonCarta->id.'2'.'.'.$extension;  
+                   $path = Storage::putFileAs(
+                        'public/imagenNinio',$request->file('foto'),$buzonCarta->id.'2'.'.'.$extension
+                    );
+                    $url = Storage::url("public/imagenNinio/".$imageName);
+                      $buzonCarta->imagen2=$url;
+                     $buzonCarta->save();
+                    $data_res = array('success' =>"Foto registrada exitosamente");
+                }                  
             }else{
                 $data_res = array('error' =>'No se puede registrar la imágen');
-
-            }       
+            }      
         
             return response()->json($data_res);
         }

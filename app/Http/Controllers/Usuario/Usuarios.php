@@ -217,18 +217,23 @@ class Usuarios extends Controller
     public function procesarFirma(Request $request)
     {
         $user=User::findOrFail($request->user);
-        $base64_image = $request->foto;
+         if ($request->hasFile('foto')) {
+            if ($request->file('foto')->isValid()) {
+                $extension = $request->foto->extension();
+                $nombreFoto=$user->id.'.jpg';
+                $path = Storage::putFileAs(
+                    'public/firmas/',$request->file('foto'),$nombreFoto
+                );
+                $url = Storage::url("public/firmas/".$nombreFoto);
+                $user->firma=$url;
+                $user->save();
+               $data_res = array('success' =>"Firma registrada exitosamente");
+            }                  
+        }else{
+            $data_res = array('error' =>'No se puede registrar la firma');
+        }    
         
-        if (preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
-            $data = substr($base64_image, strpos($base64_image, ',') + 1);
-            $data = base64_decode($data);
-            $nombreFoto=$user->id.'.jpg';
-            Storage::put("public/firmas/".$nombreFoto, $data);
-            $url = Storage::url("public/firmas/".$nombreFoto);
-            $user->firma=$url;
-            $user->save();
-        }
-        return response()->json(['ok'=>'ok']);
+        return response()->json($data_res);
     }
 
 }

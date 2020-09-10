@@ -4,7 +4,7 @@ $(".respuesta").on("keyup", function(event) {
 
 
 function checkTextAreaMaxLength(textBox, e) {
-    console.log(e.keyCode)
+   
     var maxLength = 680;
 
 

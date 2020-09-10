@@ -131,16 +131,21 @@ class Asistencias extends Controller
                 $listado->firma=$ninio->numeroChild;
 
                 if($listado->save()){
-                    $base64_image = $request->foto;
-                    if (preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
-                        $data = substr($base64_image, strpos($base64_image, ',') + 1);
-                        $data = base64_decode($data);
-                        $nombreFoto=$listado->id.'.jpg';
-                        Storage::put("public/asistencias/".$nombreFoto, $data);
-                        $url = Storage::url("public/asistencias/".$nombreFoto);
-                        $listado->fotoQr=$url;
-                        $listado->save();
+                    if ($request->hasFile('foto')) {
+                        if ($request->file('foto')->isValid()) {
+                            $extension = $request->foto->extension();
+                            $nombreFoto=$listado->id.'.jpg';
+                            $path = Storage::putFileAs(
+                                'public/asistencias/',$request->file('foto'),$nombreFoto
+                            );
+                            $url = Storage::url("public/asistencias/".$nombreFoto);
+                           $listado->fotoQr=$url;
+                           $listado->save();
+                           
+                        }                  
                     }
+                    //desde aqui
+                   
                 }
                 
                 $data_res = array('success' =>'Niño registrado exitosamente');

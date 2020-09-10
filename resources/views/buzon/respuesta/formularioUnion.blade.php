@@ -2,22 +2,21 @@
 @section('title', 'Page Title')
 <br>
 <br>
-@php
-  $date = (\Carbon\Carbon::now());
+  @php
+    $date = (\Carbon\Carbon::now());
   @endphp
-  <div class="card p-3 mt-2 dosdr">
-    
+  <div class="card p-3 mt-2 dosdr">    
     <div class="header-elements-inline">
-      <h3 class="no-browser-support">Lo sentimos, su navegador no admite la API de Web Speech. Intenta  en Google Chrome.</h3> 
-      <h5 id="recording-instructions">Presione el botón  <strong>Iniciar reconocimiento</strong> y permita el acceso.</h5>
+      <h3 class="no-browser-support">Lo sentimos, su navegador no admite la API de Web Speech. Intenta  en Google Chrome.
+      </h3> 
+      <h5 id="recording-instructions">Presione el botón  <strong>Iniciar reconocimiento</strong> y permita el acceso.
+      </h5>
       
       <div class="header-elements">
-        
         <button id="start-record-btn" class="micro dosdu"><i class="fas fa-microphone "></i></button>
       </div>
-      <div>
-      </div>
-    </div>
+
+  </div>
    
     <p>Ecuador {{ \Carbon\Carbon::parse($date)->format('d/M/Y')}} </p>    
     @if ($buzonCarta->buzon->ninio->fechaNacimiento)            
@@ -86,38 +85,60 @@
   <link href="{{ asset('buzon/css/form.css') }}" rel="stylesheet" type="text/css">
   <link href="{{ asset('buzon/css/audio.css') }}" rel="stylesheet" type="text/css">
   
-      <script>
+ <script>
+   function b64ToUint8Array(b64Image) {
+        var img = atob(b64Image.split(',')[1]);
+        var img_buffer = [];
+        var i = 0;
+        while (i < img.length) {
+            img_buffer.push(img.charCodeAt(i));
+            i++;
+        }
+        return new Uint8Array(img_buffer);
+    }
+  var doScreenshot = () => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    screenshotImage.src = canvas.toDataURL('image/jpeg');
+    var dataURL = canvas.toDataURL('image/jpeg');
+    
+    $.blockUI({message:'<h1>Guardando Imagen.!</h1>'});
+      var urlFoto="{{ route('registroImagenUno') }}";
+      var u8Image  = b64ToUint8Array(dataURL);
+
+      var formData = new FormData();
+      formData.append("foto", new Blob([ u8Image ], {type: "image/jpg"}));
+      formData.append("getIp","{{ $buzonCarta->id }}" );
+      formData.append("numero", 1);
+      $.ajax({
+          url: urlFoto,
+          type: "POST",
+          data:formData,                  
+          processData: false,  // tell jQuery not to process the data
+          contentType: false,   // tell jQuery not to set contentType
+          success : function(data) {
         
-        var doScreenshot = () => {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          canvas.getContext('2d').drawImage(video, 0, 0);
-          screenshotImage.src = canvas.toDataURL('image/jpeg');  
-          var dataURL = canvas.toDataURL('image/jpeg');  
-          
-          $.blockUI({message:'<h1>Guardando Imagen.!</h1>'});
-          $.post("{{ route('registroImagenUno') }}", { getIp:"{{ $buzonCarta->id }}",foto:dataURL,numero:1 })
-          .done(function( data ) {
-            console.log(data)
             if(data.success){
-              
               notificar('success',data.success);               
-              screenshotImageFoto.src = canvas.toDataURL('image/jpeg');                          
+              screenshotImageFoto.src = canvas.toDataURL('image/jpeg');                        
             }
             if(data.error){
               notificar('info',data.info);
-            }        
-            
-          }).always(function(){
-            $.unblockUI();
-          }).fail(function(){
-            notificar("error","Ocurrio un error");
-          });        
-          screenshotImage.classList.remove('d-none');
-        };
-        
-        
-      </script>
+            } 
+          },
+          error : function(xhr, status) {
+             notificar("error","Ocurrio un error");
+          },
+          complete : function(jqXHR, status) {
+                $.unblockUI();
+          }
+      });      
+    screenshotImage.classList.remove('d-none');
+  };
+  
+  
+</script>
 <script src="{{ asset('buzon/js/cama1.js') }}"></script>
 <script src="{{ asset('buzon/js/contestacion.js') }}"></script>
 

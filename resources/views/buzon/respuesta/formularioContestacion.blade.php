@@ -74,6 +74,16 @@
   <link href="{{ asset('buzon/css/audio.css') }}" rel="stylesheet" type="text/css">
   
       <script>
+         function b64ToUint8Array(b64Image) {
+              var img = atob(b64Image.split(',')[1]);
+              var img_buffer = [];
+              var i = 0;
+              while (i < img.length) {
+                  img_buffer.push(img.charCodeAt(i));
+                  i++;
+              }
+              return new Uint8Array(img_buffer);
+          }
         
         var doScreenshot = () => {
           canvas.width = video.videoWidth;
@@ -82,24 +92,37 @@
           screenshotImage.src = canvas.toDataURL('image/jpeg');
           var dataURL = canvas.toDataURL('image/jpeg');
           
-          $.blockUI({message:'<h1>Guardando Imagen.!</h1>'});
-          $.post("{{ route('registroImagenUno') }}", { getIp:"{{ $buzonCarta->id }}",foto:dataURL,numero:1 })
-          .done(function( data ) {
-            console.log(data)
-            if(data.success){
-              
-              notificar('success',data.success);               
-              screenshotImageFoto.src = canvas.toDataURL('image/jpeg');                        
-            }
-            if(data.error){
-              notificar('info',data.info);
-            }        
-            
-          }).always(function(){
-            $.unblockUI();
-          }).fail(function(){
-            notificar("error","Ocurrio un error");
-          });        
+          $.blockUI({message:'<h1>Guardando Imagen.!</h1>'});      
+          var urlFoto="{{ route('registroImagenUno') }}";
+            var u8Image  = b64ToUint8Array(dataURL);
+
+            var formData = new FormData();
+            formData.append("foto", new Blob([ u8Image ], {type: "image/jpg"}));
+            formData.append("getIp","{{ $buzonCarta->id }}" );
+            formData.append("numero", 1);
+            $.ajax({
+                url: urlFoto,
+                type: "POST",
+                data:formData,                  
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,   // tell jQuery not to set contentType
+                success : function(data) {
+                 
+                  if(data.success){
+                    notificar('success',data.success);               
+                    screenshotImageFoto.src = canvas.toDataURL('image/jpeg');                        
+                  }
+                  if(data.error){
+                    notificar('info',data.info);
+                  } 
+                },
+                error : function(xhr, status) {
+                   notificar("error","Ocurrio un error");
+                },
+                complete : function(jqXHR, status) {
+                      $.unblockUI();
+                }
+            });   
           screenshotImage.classList.remove('d-none');
         };
         
@@ -122,7 +145,6 @@ $("#formularioContestacion").submit(function(e) {
       return false;
   }
   continuarVali =true;
-
   $.ajax({
       type: "POST",
       url: url,
@@ -147,11 +169,7 @@ $("#formularioContestacion").submit(function(e) {
         }
       }
       });
-
-
 });
-
-
 
 </script>
        
